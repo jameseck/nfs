@@ -11,8 +11,10 @@ class nfs::server::install (
     default: { fail("osfamily ${::osfamily} is not supported.") }
   }
 
-  package { $package_list:
-    ensure => installed,
+  if ( $package_list != undef ) {
+    package { $package_list:
+      ensure => installed,
+    }
   }
 
 }
