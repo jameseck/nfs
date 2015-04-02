@@ -30,6 +30,8 @@ define nfs::server::export (
   $comment = 'Managed by Puppet'
 ) {
 
+  include '::nfs::server::export_setup'
+
   if ( $path == undef ) {
     validate_absolute_path($name)
     $real_path = $name
