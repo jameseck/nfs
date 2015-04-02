@@ -53,6 +53,9 @@
 # [*lockd_tcpport*]
 #   See above option.
 #
+# [*exports*]
+#   A hash of exports to be managed.
+#
 class nfs::server (
   $service_enable                  = true,
   $service_ensure                  = running,
@@ -63,6 +66,7 @@ class nfs::server (
   $nfscommon_sysconfig_hash_lookup = false,
   $lockd_udpport                   = undef,
   $lockd_tcpport                   = undef,
+  $exports_hash                    = undef,
 ) {
 
   contain '::nfs::server::install'
@@ -72,5 +76,36 @@ class nfs::server (
   Class['nfs::server::install'] ->
   Class['nfs::server::config']  ~>
   Class['nfs::server::service']
+
+  if ( $exports_hash != undef ) {
+    validate_hash($exports_hash)
+
+    #You don't actually reload the NFS service when an export changes,
+    # you use the exportfs command. This Exec should be notified when adding
+    # or removing lines to /etc/exportfs
+    exec { 'reload_exportfs_file':
+      path        => '/bin:/usr/bin:/sbin:/usr/sbin',
+      command     => 'exportfs -r',
+      refreshonly => true,
+    }
+
+    # Set up the initial export file properties
+    concat{ '/etc/exports':
+      owner  => root,
+      group  => root,
+      mode   => 644,
+      notify => Exec['reload_exportfs_file']
+    }
+
+    # Add a header (just a comment that shows the file is managed by Puppet)
+    concat::fragment{'exports_header':
+      target  => '/etc/exports',
+      content => "#### Puppet manages this file! ####\n\n",
+      order   => 10,
+    }
+
+    create_resources('nfs::server::export', $exports_hash)
+
+  }
 
 }
