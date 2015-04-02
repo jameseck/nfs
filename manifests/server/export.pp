@@ -45,7 +45,7 @@ define nfs::server::export (
   concat::fragment { "nfs export ${real_path} for ${clients}":
     target  => '/etc/exports',
     order   => $order,
-    content => template('nfs/exports.erb'),
+    content => template('nfs/server/exports.erb'),
     notify  => Exec ['reload_exportfs_file'],
   }
 }
