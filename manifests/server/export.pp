@@ -30,12 +30,19 @@ define nfs::server::export (
   $comment = 'Managed by Puppet'
 ) {
 
-  validate_absolute_path($path)
+  if ( $path == undef ) {
+    validate_absolute_path($name)
+    $real_path = $name
+  } else {
+    validate_absolute_path($path)
+    $real_path = $path
+  }
+
   validate_array($clients)
   validate_string($options)
-  if type($order) != 'integer' { fail("Not an integer in nfs::server::export define ${name}") }
+  if type($order) != 'integer' { fail("order parameter is not an integer in nfs::server::export define ${name}") }
 
-  concat::fragment { "nfs export ${path} for ${clients}":
+  concat::fragment { "nfs export ${real_path} for ${clients}":
     target  => '/etc/exports',
     order   => $order,
     content => template('nfs/exports.erb'),

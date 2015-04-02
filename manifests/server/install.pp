@@ -6,6 +6,7 @@ class nfs::server::install (
 
   case $::osfamily {
     #'RedHat': { $package_list = [ 'nfs-utils', ] } # Not required, should be handled by nfs::common
+    'RedHat':  { }
     'Debian': { $package_list = [ 'nfs-kernel-server' ] }
     default: { fail("osfamily ${::osfamily} is not supported.") }
   }
