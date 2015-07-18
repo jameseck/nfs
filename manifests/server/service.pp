@@ -15,7 +15,7 @@ class nfs::server::service (
         case $::operatingsystemrelease {
           /^6.*/: { $service_list = [ 'rpcbind', 'nfs', 'nfslock' ] }
           /^5.*/: { $service_list = [ 'nfs', 'nfslock', 'portmap' ] }
-          /^7.*/: { $service_list = [ 'nfs-idmap', 'nfs-lock', 'nfs-mountd', 'nfs-rquotad', 'nfs-server', ] }
+          /^7.*/: { $service_list = [ 'nfs-idmap', 'nfs-lock', 'nfs-mountd', 'nfs-server', ] }
           default: { fail("operatingsystemrelease ${::operatingsystemrelease} not supported") }
         }
     }
