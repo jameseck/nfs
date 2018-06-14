@@ -48,6 +48,6 @@ define nfs::server::export (
     target  => '/etc/exports',
     order   => $order,
     content => template('nfs/server/exports.erb'),
-    notify  => Exec ['reload_exportfs_file'],
+    notify  => Exec['reload_exportfs_file'],
   }
 }

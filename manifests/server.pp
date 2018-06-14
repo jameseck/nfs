@@ -57,32 +57,34 @@
 #   A hash of exports to be managed.
 #
 class nfs::server (
-  $service_enable                  = true,
-  $service_ensure                  = running,
-  $package_ensure                  = installed,
-  $nfs_sysconfig_options           = {},
-  $nfs_sysconfig_hash_lookup       = false,
-  $nfscommon_sysconfig_options     = {},
-  $nfscommon_sysconfig_hash_lookup = false,
-  $lockd_udpport                   = undef,
-  $lockd_tcpport                   = undef,
-  $exports_hash                    = undef,
+  Boolean $service_enable                  = true,
+  Enum[ 'true', 'false', 'running', 'stopped' ]
+          $service_ensure                  = 'running',
+  Enum[ 'present', 'installed', 'absent', 'purged', 'held', 'latest' ]
+          $package_ensure                  = 'installed',
+  Variant[String, Undef]
+          $package_name                    = undef,
+  Hash    $nfs_sysconfig_options           = {},
+  Boolean $nfs_sysconfig_hash_lookup       = false,
+  Hash    $nfscommon_sysconfig_options     = {},
+  Boolean $nfscommon_sysconfig_hash_lookup = false,
+  Integer $lockd_udpport                   = undef,
+  Integer $lockd_tcpport                   = undef,
+  Hash    $exports_hash                    = {},
 ) {
 
   contain '::nfs::server::install'
   contain '::nfs::server::config'
   contain '::nfs::server::service'
 
-  Class['nfs::server::install'] ->
-  Class['nfs::server::config']  ~>
-  Class['nfs::server::service']
+  Class['nfs::server::install']
+  -> Class['nfs::server::config']
+  ~> Class['nfs::server::service']
 
-  if ( $exports_hash != undef ) {
+  if ( $exports_hash != {} ) {
     validate_hash($exports_hash)
     include '::nfs::server::export_setup'
-
     create_resources('nfs::server::export', $exports_hash)
-
   }
 
 }
