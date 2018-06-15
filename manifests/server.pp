@@ -51,6 +51,8 @@ class nfs::server (
   Enum[ 'true', 'false', 'running', 'stopped' ]
           $service_ensure        = 'running',
   Array   $service_list          = [],
+  String  $nfs_service_name      = undef,
+  String  $statd_service_name    = undef,
   Enum[ 'present', 'installed', 'absent', 'purged', 'held', 'latest' ]
           $package_ensure        = 'installed',
   Variant[String, Undef]
@@ -59,16 +61,19 @@ class nfs::server (
           $sysconfig_file        = undef,
   Hash    $sysconfig_options     = {},
   Boolean $sysconfig_hash_lookup = false,
-  Integer $lockd_udpport         = undef,
-  Integer $lockd_tcpport         = undef,
+  Integer $statd_port            = undef,
+  Integer $mountd_port           = undef,
+  Integer $lockd_port            = undef,
   Hash    $exports_hash          = {},
 ) {
 
+  contain '::nfs::common'
   contain '::nfs::server::install'
   contain '::nfs::server::config'
   contain '::nfs::server::service'
 
-  Class['nfs::server::install']
+  Class['nfs::common']
+  -> Class['nfs::server::install']
   -> Class['nfs::server::config']
   ~> Class['nfs::server::service']
 

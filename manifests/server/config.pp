@@ -10,7 +10,7 @@ class nfs::server::config (
     $nfs_sysconfig_options_erb = $::nfs::server::nfs_sysconfig_options
   }
 
-  file { $sysconfig_file:
+  file { $nfs::server::sysconfig_file:
     ensure  => file,
     owner   => 'root',
     group   => 'root',
@@ -18,28 +18,47 @@ class nfs::server::config (
     content => template('nfs/server/nfs_sysconfig.erb')
   }
 
-  if ( $::osfamily == 'Debian' ) {
-
-    # If we specify a non-default lockd_udpport or lockd_tcpport, create the
-    # modprobe.d file.
-    # Note that the server will need to be rebooted, or you'll have to rmmod and
-    # modprobe lockd for this option to take effect
-    if ( $::nfs::server::lockd_udpport != undef or $::nfs::server::lockd_tcpport != undef ) {
-      $erb_nfs_lockd_udpport = $::nfs::server::lockd_udpport
-      $erb_nfs_lockd_tcpport = $::nfs::server::lockd_tcpport
-
-      file { '/etc/modprobe.d/nfs.conf':
-        ensure  => file,
-        owner   => 'root',
-        group   => 'root',
-        mode    => '0644',
-        content => template('nfs/server/modprobe.d_nfs.conf.erb'),
-      }
-    } else {
-      file { '/etc/modprobe.d/nfs.conf':
-        ensure => absent,
-      }
+  ['tcp', 'udp'].each |$p| {
+    etc_services { "rpc.statd/${p}":
+      port    => $nfs::server::statd_port,
+      comment => 'nfs rpc.statd',
     }
+
+    etc_services { "rpc.mountd/${p}":
+      port    => $nfs::server::mountd_port,
+      comment => 'nfs rpc.mountd',
+    }
+
+    etc_services { "rpc.lockd/${p}":
+      port    => $nfs::server::lockd_port,
+      comment => 'nfs rpc.lockd',
+    }
+
+    file_line { "lockd ${p} port":
+      path  => '/etc/modprobe.d/lockd.conf',
+      match => "^(#)?options lockd nlm_${p}port.*$",
+      line  => "options lockd nlm_udpport=${nfs::server::lockd_port}",
+    }
+
+    sysctl { "fs.nfs.nlm_${p}port":
+      ensure => present,
+      value  => $nfs::server::lockd_port,
+      notify => Exec['nfs-server restart'],
+    }
+  }
+
+  file_line { 'nfs statd port':
+    path   => '/etc/sysconfig/nfs',
+    match  => '^STATD_PORT=.*$',
+    line   => "STATD_PORT=${nfs::server::statd_port}",
+    notify => Exec['statd restart'],
+  }
+
+  file_line { 'nfs mountd port':
+    path   => '/etc/sysconfig/nfs',
+    match  => '^MOUNTD_PORT=.*$',
+    line   => "MOUNTD_PORT=${nfs::server::mountd_port}",
+    notify => Exec['nfs-server restart'],
   }
 
 }

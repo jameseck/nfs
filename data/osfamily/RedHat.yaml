@@ -2,10 +2,10 @@
 nfs::common::package_name: nfs-utils
 nfs::server::service_name: nfs-server
 nfs::server::sysconfig_file: /etc/sysconfig/nfs
+nfs::server::nfs_service_name: nfs-server
+nfs::server::statd_service_name: rpc-statd
 nfs::server::service_list:
-- nfs-server
-- rpcbind
-- rpc-statd
+- gssproxy
 - nfs-idmapd
 - nfs-mountd
-- gssproxy
+- rpcbind

@@ -3,6 +3,6 @@ nfs::common::package_name: nfs-common
 nfs::server::package_name: nfs-kernel-server
 nfs::server::service_name: nfs-kernel-server
 nfs::server::sysconfig_file: /etc/default/nfs-kernel-server
+nfs::server::nfs_service_name: nfs-kernel-server
 nfs::server::service_list:
-- nfs-kernel-server
 - rpcbind
