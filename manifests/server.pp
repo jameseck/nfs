@@ -31,16 +31,6 @@
 #   By default, a more specific hierarchy will override
 #   the options.
 #
-# [*nfscommon_sysconfig_options*]
-#   A hash of options to put in the nfs-common sysconfig file.
-#   This option will only be effective on Debian variants.
-#
-# [*nfscommon_sysconfig_hash_lookup*]
-#   If you want this class to do a hiera_hash lookup,
-#   set this option to true.
-#   By default, a more specific hierarchy will override
-#   the options.
-#
 # [*lockd_udpport*]
 #   Use this option to override the lockd udp port.
 #   If this or the tcpport option is set, the class will
@@ -57,20 +47,21 @@
 #   A hash of exports to be managed.
 #
 class nfs::server (
-  Boolean $service_enable                  = true,
+  Boolean $service_enable        = true,
   Enum[ 'true', 'false', 'running', 'stopped' ]
-          $service_ensure                  = 'running',
+          $service_ensure        = 'running',
+  Array   $service_list          = [],
   Enum[ 'present', 'installed', 'absent', 'purged', 'held', 'latest' ]
-          $package_ensure                  = 'installed',
+          $package_ensure        = 'installed',
   Variant[String, Undef]
-          $package_name                    = undef,
-  Hash    $nfs_sysconfig_options           = {},
-  Boolean $nfs_sysconfig_hash_lookup       = false,
-  Hash    $nfscommon_sysconfig_options     = {},
-  Boolean $nfscommon_sysconfig_hash_lookup = false,
-  Integer $lockd_udpport                   = undef,
-  Integer $lockd_tcpport                   = undef,
-  Hash    $exports_hash                    = {},
+          $package_name          = undef,
+  Stdlib::Absolutepath
+          $sysconfig_file        = undef,
+  Hash    $sysconfig_options     = {},
+  Boolean $sysconfig_hash_lookup = false,
+  Integer $lockd_udpport         = undef,
+  Integer $lockd_tcpport         = undef,
+  Hash    $exports_hash          = {},
 ) {
 
   contain '::nfs::server::install'
