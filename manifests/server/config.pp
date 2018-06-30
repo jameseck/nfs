@@ -14,18 +14,27 @@ class nfs::server::config (
     content => template('nfs/server/nfs_sysconfig.erb')
   }
 
-    $lockd_port_ensure = $nfs::server::lockd_port ? {
-      undef   => 'absent',
-      default => 'present',
-    }
-    $statd_port_ensure = $nfs::server::statd_port ? {
-      undef   => 'absent',
-      default => 'present',
-    }
-    $mountd_port_ensure = $nfs::server::mountd_port ? {
-      undef   => 'absent',
-      default => 'present',
-    }
+  file { '/etc/modprobe.d/lockd.conf':
+    ensure => present,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+  }
+
+  $lockd_port_ensure = $nfs::server::lockd_port ? {
+    undef   => 'absent',
+    default => 'present',
+  }
+
+  $statd_port_ensure = $nfs::server::statd_port ? {
+    undef   => 'absent',
+    default => 'present',
+  }
+
+  $mountd_port_ensure = $nfs::server::mountd_port ? {
+    undef   => 'absent',
+    default => 'present',
+  }
 
   ['tcp', 'udp'].each |$p| {
     etcservices::service { "rpc.statd/${p}":
@@ -47,15 +56,18 @@ class nfs::server::config (
     }
 
     file_line { "lockd ${p} port":
-      path  => '/etc/modprobe.d/lockd.conf',
-      match => "^(#)?options lockd nlm_${p}port.*$",
-      line  => "options lockd nlm_udpport=${nfs::server::lockd_port}",
+      ensure => $lockd_port_ensure,
+      path   => '/etc/modprobe.d/lockd.conf',
+      match  => "^(#)?options lockd nlm_${p}port.*$",
+      line   => "options lockd nlm_udpport=${nfs::server::lockd_port}",
     }
 
-    sysctl { "fs.nfs.nlm_${p}port":
-      ensure => present,
-      value  => $nfs::server::lockd_port,
-      notify => Exec['nfs-server restart'],
+    if ( $nfs::server::lockd_port != undef ) {
+      sysctl { "fs.nfs.nlm_${p}port":
+        ensure => $lockd_port_ensure,
+        value  => $nfs::server::lockd_port,
+        notify => Exec['nfs-server restart'],
+      }
     }
   }
 
