@@ -15,17 +15,17 @@ class nfs::server::config (
   }
 
   ['tcp', 'udp'].each |$p| {
-    etc_services { "rpc.statd/${p}":
+    etcservices::service { "rpc.statd/${p}":
       port    => $nfs::server::statd_port,
       comment => 'nfs rpc.statd',
     }
 
-    etc_services { "rpc.mountd/${p}":
+    etcservices::service { "rpc.mountd/${p}":
       port    => $nfs::server::mountd_port,
       comment => 'nfs rpc.mountd',
     }
 
-    etc_services { "rpc.lockd/${p}":
+    etcservices::service { "rpc.lockd/${p}":
       port    => $nfs::server::lockd_port,
       comment => 'nfs rpc.lockd',
     }
