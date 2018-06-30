@@ -7,11 +7,11 @@ class nfs::server::config (
   $nfs_sysconfig_options_erb = $::nfs::server::sysconfig_options
 
   file { $nfs::server::sysconfig_file:
-    ensure  => file,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
-    content => template('nfs/server/nfs_sysconfig.erb')
+    ensure => file,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0644',
+#    content => template('nfs/server/nfs_sysconfig.erb')
   }
 
   file { '/etc/modprobe.d/lockd.conf':
@@ -68,6 +68,15 @@ class nfs::server::config (
         value  => $nfs::server::lockd_port,
         notify => Exec['nfs-server restart'],
       }
+    }
+  }
+
+  $nfs::sysconfig_options.each |$k,$v| {
+    file_line { "nfs sysconfig ${k}":
+      path   => '/etc/sysconfig/nfs',
+      match  => "^${k}=.*$",
+      line   => "${k}=${v}",
+      notify => Exec['nfs-server restart'],
     }
   }
 
