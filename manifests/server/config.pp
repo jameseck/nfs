@@ -71,7 +71,7 @@ class nfs::server::config (
     }
   }
 
-  $nfs::sysconfig_options.each |$k,$v| {
+  $nfs::server::sysconfig_options.each |$k,$v| {
     file_line { "nfs sysconfig ${k}":
       path   => '/etc/sysconfig/nfs',
       match  => "^${k}=.*$",
