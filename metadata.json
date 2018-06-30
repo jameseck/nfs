@@ -8,6 +8,7 @@
   "project_page": "https://github.com/jameseck/puppet-nfs",
   "issues_url": "https://github.com/jameseck/puppet-nfs/issues",
   "dependencies": [
+    {"name":"puppetlabs/stdlib","version_requirement":">= 3.2.0"}
   ],
   "data_provider": "hiera",
   "operatingsystem_support": [
