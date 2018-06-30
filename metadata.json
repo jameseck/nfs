@@ -2,7 +2,7 @@
   "name": "puppet-nfs",
   "version": "0.0.1",
   "author": "James Eckersall",
-  "summary": "Installs, configures, and manages Patroni.",
+  "summary": "Installs, configures, and manages NFS",
   "license": "Apache-2.0",
   "source": "https://github.com/jameseck/puppet-nfs",
   "project_page": "https://github.com/jameseck/puppet-nfs",
