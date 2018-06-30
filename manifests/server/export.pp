@@ -25,8 +25,7 @@
 define nfs::server::export (
   Stdlib::Absolutepath
           $path    = $name,
-  Variant[Array, String]
-          $clients = undef,
+  Array   $clients = [],
   String  $options = 'ro',
   Integer $order   = 50,
   String  $comment = 'Managed by Puppet'
@@ -38,7 +37,7 @@ define nfs::server::export (
     concat::fragment { "nfs export ${path} for ${client}":
       target  => '/etc/exports',
       order   => $order,
-      content => "${path}  ${client} ${options} ${comment}",
+      content => "${path}  ${client}(${options}) ${comment}",
       # template('nfs/server/exports.erb'),
       notify  => Exec['reload_exportfs_file'],
     }
