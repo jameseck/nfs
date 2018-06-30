@@ -9,7 +9,7 @@ class nfs::server::service (
   }
 
   if ( $nfs::server::statd_service_name != undef ) {
-    service { $nfs::server::nfs_service_name:
+    service { $nfs::server::statd_service_name:
       ensure => $::nfs::server::service_ensure,
       enable => $::nfs::server::service_enable,
     }
