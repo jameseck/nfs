@@ -14,18 +14,34 @@ class nfs::server::config (
     content => template('nfs/server/nfs_sysconfig.erb')
   }
 
+    $lockd_port_ensure = $nfs::server::lockd_port ? {
+      undef   => 'absent',
+      default => 'present',
+    }
+    $statd_port_ensure = $nfs::server::statd_port ? {
+      undef   => 'absent',
+      default => 'present',
+    }
+    $mountd_port_ensure = $nfs::server::mountd_port ? {
+      undef   => 'absent',
+      default => 'present',
+    }
+
   ['tcp', 'udp'].each |$p| {
     etcservices::service { "rpc.statd/${p}":
+      ensure  => $statd_port_ensure,
       port    => $nfs::server::statd_port,
       comment => 'nfs rpc.statd',
     }
 
     etcservices::service { "rpc.mountd/${p}":
+      ensure  => $mountd_port_ensure,
       port    => $nfs::server::mountd_port,
       comment => 'nfs rpc.mountd',
     }
 
     etcservices::service { "rpc.lockd/${p}":
+      ensure  => $lockd_port_ensure,
       port    => $nfs::server::lockd_port,
       comment => 'nfs rpc.lockd',
     }
