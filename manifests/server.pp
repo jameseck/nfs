@@ -13,9 +13,12 @@ class nfs::server (
           $sysconfig_file        = undef,
   Hash    $sysconfig_options     = {},
   Boolean $sysconfig_hash_lookup = false,
-  Integer $statd_port            = undef,
-  Integer $mountd_port           = undef,
-  Integer $lockd_port            = undef,
+  Variant[Integer, Undef]
+          $statd_port            = undef,
+  Variant[Integer, Undef]
+          $mountd_port           = undef,
+  Variant[Integer, Undef]
+          $lockd_port            = undef,
   Hash    $exports_hash          = {},
 ) {
 
