@@ -4,11 +4,7 @@
 class nfs::server::config (
 ) {
 
-  if ( $::nfs::server::nfs_sysconfig_hash_lookup == true ) {
-    $nfs_sysconfig_options_erb = hiera_hash('nfs::server::nfs_sysconfig_options')
-  } else {
-    $nfs_sysconfig_options_erb = $::nfs::server::nfs_sysconfig_options
-  }
+  $nfs_sysconfig_options_erb = $::nfs::server::sysconfig_options
 
   file { $nfs::server::sysconfig_file:
     ensure  => file,
