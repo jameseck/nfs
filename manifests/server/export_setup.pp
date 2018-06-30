@@ -1,7 +1,7 @@
 class nfs::server::export_setup (
 ) {
 
-  #You don't actually reload the NFS service when an export changes,
+  # You don't actually reload the NFS service when an export changes,
   # you use the exportfs command. This Exec should be notified when adding
   # or removing lines to /etc/exportfs
   exec { 'reload_exportfs_file':

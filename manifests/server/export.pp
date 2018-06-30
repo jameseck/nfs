@@ -23,28 +23,17 @@
 #  The comment parameter is also optional and is really only there so you can be descriptive about the export if required.
 #
 define nfs::server::export (
-  $path    = undef,
-  $clients = undef,
-  $options = 'ro',
-  $order   = 50,
-  $comment = 'Managed by Puppet'
+  Stdlib::Absolutepath
+          $path    = $name,
+  Array   $clients = undef,
+  String  $options = 'ro',
+  Integer $order   = 50,
+  String  $comment = 'Managed by Puppet'
 ) {
 
   include '::nfs::server::export_setup'
 
-  if ( $path == undef ) {
-    validate_absolute_path($name)
-    $real_path = $name
-  } else {
-    validate_absolute_path($path)
-    $real_path = $path
-  }
-
-  validate_array($clients)
-  validate_string($options)
-  if type($order) != 'integer' { fail("order parameter is not an integer in nfs::server::export define ${name}") }
-
-  concat::fragment { "nfs export ${real_path} for ${clients}":
+  concat::fragment { "nfs export ${path} for ${clients}":
     target  => '/etc/exports',
     order   => $order,
     content => template('nfs/server/exports.erb'),
