@@ -35,20 +35,19 @@ define nfs::server::export (
 
   # TODO: handle multiple clients properly
   $clients.each |$client| {
-    $path_sanitized = regsubst($path, '/', '_', 'G')
-    $client_sanitized = regsubst($client, '\*', 'world')
-    file { "/etc/exports.d/${path_sanitized}_${client_sanitized}":
+#    $path_sanitized = regsubst($path, '/', '_', 'G')
+#    $client_sanitized = regsubst($client, '\*', 'world')
+#    file { "/etc/exports.d/${path_sanitized}_${client_sanitized}":
+#      content => template('nfs/server/exports.erb'),
+#      notify  => Exec['reload_exportfs_file'],
+#    }
+    concat::fragment { "nfs export ${path} for ${client}":
+      target  => '/etc/exports',
+      order   => $order,
+      #content => "${path}  ${client}(${options}) # ${comment}\n",
       content => template('nfs/server/exports.erb'),
       notify  => Exec['reload_exportfs_file'],
     }
   }
-#    concat::fragment { "nfs export ${path} for ${client}":
-#      target  => '/etc/exports',
-#      order   => $order,
-#      #content => "${path}  ${client}(${options}) # ${comment}\n",
-#      content => template('nfs/server/exports.erb'),
-#      notify  => Exec['reload_exportfs_file'],
-#    }
-#  }
 
 }
