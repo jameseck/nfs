@@ -10,19 +10,19 @@ class nfs::server::export_setup (
     refreshonly => true,
   }
 
-  # Set up the initial export file properties
-  concat{ '/etc/exports':
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0644',
-    notify => Exec['reload_exportfs_file']
-  }
+#  # Set up the initial export file properties
+#  concat{ '/etc/exports':
+#    owner  => 'root',
+#    group  => 'root',
+#    mode   => '0644',
+#    notify => Exec['reload_exportfs_file']
+#  }
 
-  # Add a header (just a comment that shows the file is managed by Puppet)
-  concat::fragment{'exports_header':
-    target  => '/etc/exports',
-    content => "#### Puppet manages this file! ####\n\n",
-    order   => 10,
-  }
+#  # Add a header (just a comment that shows the file is managed by Puppet)
+#  concat::fragment{'exports_header':
+#    target  => '/etc/exports',
+#    content => "#### Puppet manages this file! ####\n\n",
+#    order   => 10,
+#  }
 
 }
